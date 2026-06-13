@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>The Cosmos of Iqra</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body, html { margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden; background: #03000a; }
+    iframe { width: 100%; height: 100%; border: none; display: block; }
+    
+    /* Music Widget Styles */
+    #sound-widget {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 9999;
+      padding: 12px;
+      border-radius: 50px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 32px rgba(139, 49, 255, 0.2);
+    }
+    
+    #music-toggle { background: none; border: none; color: white; font-size: 18px; outline: none; cursor: pointer; }
+    #music-bars { display: flex; align-items: flex-end; gap: 3px; height: 18px; width: 25px; }
+    
+    .bar { width: 3px; border-radius: 3px; animation: bounceBar 0.8s ease infinite alternate; animation-play-state: paused; }
+    .bar:nth-child(1) { height: 60%; background: #FF0080; }
+    .bar:nth-child(2) { height: 100%; background: #8B31FF; animation-delay: 0.2s; animation-duration: 0.6s; }
+    .bar:nth-child(3) { height: 40%; background: #FFD700; animation-delay: 0.1s; animation-duration: 0.9s; }
+    .bar:nth-child(4) { height: 80%; background: #00D4FF; animation-delay: 0.3s; animation-duration: 0.7s; }
+
+    @keyframes bounceBar {
+      0% { height: 20%; }
+      100% { height: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <iframe id="main-frame" src="home.html" allow="autoplay"></iframe>
+
+  <div id="sound-widget">
+    <button id="music-toggle">🔇</button>
+    <div id="music-bars">
+      <span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
+    </div>
+  </div>
+
+  <script>
+    const bgMusic = new Audio('assets/audio/iqra.mp3');
+    bgMusic.loop = true;
+    bgMusic.volume = 0.4;
+    
+    const toggleBtn = document.getElementById('music-toggle');
+    const bars = document.querySelectorAll('.bar');
+    let userPaused = false;
+    let isPlaying = false;
+
+    function updateUI(playing) {
+      isPlaying = playing;
+      toggleBtn.innerHTML = playing ? '🔊' : '🔇';
+      bars.forEach(bar => {
+        bar.style.animationPlayState = playing ? 'running' : 'paused';
+      });
+    }
+
+    function playMusic() {
+      bgMusic.play().then(() => {
+        updateUI(true);
+        userPaused = false;
+      }).catch(err => console.log('Audio play failed:', err));
+    }
+
+    function toggleMusic() {
+      if (bgMusic.paused) {
+        playMusic();
+      } else {
+        bgMusic.pause();
+        updateUI(false);
+        userPaused = true;
+      }
+    }
+
+    document.getElementById('sound-widget').addEventListener('click', toggleMusic);
+
+    // Listen for messages from the iframe (e.g., when clicking "Enter Memory Lane")
+    window.addEventListener('message', (e) => {
+      if (e.data === 'play_music') {
+        playMusic();
+      } else if (e.data === 'pause_main_music') {
+        bgMusic.pause();
+      } else if (e.data === 'resume_main_music') {
+        if (!userPaused) {
+          bgMusic.play().catch(err => console.log('Audio play failed:', err));
+        }
+      }
+    });
+  </script>
+</body>
+</html>

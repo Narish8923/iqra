@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Cosmos of Iqra</title>
+  <meta name="description" content="A cinematic, interactive cosmic experience dedicated to Iqra.">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Page Specific Styles */
+    .hero-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      overflow: hidden;
+    }
+
+    #particles-canvas {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background: radial-gradient(circle at center, #0a021c 0%, #03000a 100%);
+    }
+
+    .landing-card {
+      position: relative;
+      z-index: 2;
+      max-width: 650px;
+      width: 90%;
+      text-align: center;
+      padding: 50px 40px;
+      margin-top: 40px;
+    }
+
+    .cosmic-title {
+      font-family: 'Cinzel', serif;
+      font-size: 5rem;
+      font-weight: 900;
+      letter-spacing: 15px;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      text-shadow: 0 0 40px rgba(139, 49, 255, 0.6), 0 0 80px rgba(255, 0, 128, 0.4);
+      animation: titleFloat 4s ease-in-out infinite alternate;
+    }
+
+    @keyframes titleFloat {
+      0% { transform: translateY(0) scale(1); text-shadow: 0 0 30px rgba(139, 49, 255, 0.5); }
+      100% { transform: translateY(-10px) scale(1.02); text-shadow: 0 0 60px rgba(255, 0, 128, 0.8), 0 0 20px var(--cyan); }
+    }
+
+    .subtitle {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 1.4rem;
+      color: var(--text-secondary);
+      margin-bottom: 40px;
+      letter-spacing: 2px;
+    }
+
+    /* Premium Countdown styling */
+    .countdown-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .countdown-item {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      padding: 15px 10px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 0 15px rgba(255, 255, 255, 0.02);
+    }
+
+    .countdown-item::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(139, 49, 255, 0.5), transparent);
+    }
+
+    .countdown-val {
+      font-size: 2.2rem;
+      font-weight: 800;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(180deg, #fff 30%, var(--purple-light) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: block;
+      line-height: 1.2;
+    }
+
+    .countdown-lbl {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-weight: 500;
+      margin-top: 5px;
+      display: block;
+    }
+
+    .cosmic-hint {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 25px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 600px) {
+      .cosmic-title { font-size: 3rem; letter-spacing: 8px; }
+      .subtitle { font-size: 1.1rem; }
+      .countdown-grid { gap: 10px; }
+      .countdown-val { font-size: 1.6rem; }
+      .countdown-lbl { font-size: 0.65rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Scroll Progress -->
+  <div id="scroll-progress"></div>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="nav-logo">IQRA</div>
+    <div class="nav-links">
+      <a href="home.html" class="active">Cosmos</a>
+      <a href="gallery.html">Memories</a>
+      <a href="letter.html">The Letter</a>
+      <a href="celebrate.html">Celebration</a>
+    </div>
+  </nav>
+
+  <!-- Hero Landing Container -->
+  <div class="hero-container">
+    <!-- Nebula Canvas Background -->
+    <canvas id="particles-canvas"></canvas>
+
+    <div class="landing-card glass float" data-reveal="scale">
+      <span class="section-tag" style="margin-bottom: 15px;">🌟 Birthday Countdown</span>
+      <h1 class="cosmic-title grad-cosmic">IQRA</h1>
+      <p class="subtitle">A cosmic journey through space, time, and memories...</p>
+
+      <!-- Countdown -->
+      <div class="countdown-grid">
+        <div class="countdown-item">
+          <span class="countdown-val" id="days">00</span>
+          <span class="countdown-lbl">Days</span>
+        </div>
+        <div class="countdown-item">
+          <span class="countdown-val" id="hours">00</span>
+          <span class="countdown-lbl">Hrs</span>
+        </div>
+        <div class="countdown-item">
+          <span class="countdown-val" id="minutes">00</span>
+          <span class="countdown-lbl">Mins</span>
+        </div>
+        <div class="countdown-item">
+          <span class="countdown-val" id="seconds">00</span>
+          <span class="countdown-lbl">Secs</span>
+        </div>
+      </div>
+
+      <!-- Action Button -->
+      <a href="gallery.html" class="btn btn-primary btn-transition" onclick="window.parent.postMessage('play_music', '*');">
+        <span>Enter Memory Lane</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+      </a>
+
+      <p class="cosmic-hint">🌌 Hint: Try pressing ↑ ↑ ↓ ↓ ← → ← → B A on your keyboard</p>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+  <script>
+    /* ====== Cosmic Space Particles Canvas ====== */
+    const canvas = document.getElementById('particles-canvas');
+    const ctx = canvas.getContext('2d');
+
+    let particles = [];
+    const particleCount = 120;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    class Particle {
+      constructor() {
+        this.reset();
+      }
+
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 2.2 + 0.3;
+        this.speedX = Math.random() * 0.2 - 0.1;
+        this.speedY = Math.random() * 0.2 - 0.1;
+        this.opacity = Math.random() * 0.7 + 0.1;
+        this.color = this.getRandomColor();
+      }
+
+      getRandomColor() {
+        const colors = [
+          'rgba(139, 49, 255, ',  // Purple
+          'rgba(255, 0, 128, ',   // Pink
+          'rgba(0, 212, 255, ',   // Cyan
+          'rgba(255, 215, 0, '    // Gold
+        ];
+        return colors[Math.floor(Math.random() * colors.length)];
+      }
+
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+
+        // Bounce/Wrap borders
+        if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+        if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+      }
+
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = this.color + this.opacity + ')';
+        ctx.shadowBlur = this.size * 5;
+        ctx.shadowColor = 'rgba(255,255,255,0.2)';
+        ctx.fill();
+        ctx.shadowBlur = 0; // Reset
+      }
+    }
+
+    function initParticles() {
+      for (let i = 0; i < particleCount; i++) {
+        particles.push(new Particle());
+      }
+    }
+    initParticles();
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Draw subtle nebula ambient glow circles
+      ctx.beginPath();
+      let gradient = ctx.createRadialGradient(canvas.width*0.5, canvas.height*0.5, 0, canvas.width*0.5, canvas.height*0.5, canvas.width*0.8);
+      gradient.addColorStop(0, 'rgba(8, 0, 30, 0.8)');
+      gradient.addColorStop(0.5, 'rgba(4, 0, 15, 0.95)');
+      gradient.addColorStop(1, '#020008');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+
+    /* ====== Birthday Countdown Logic ====== */
+    function initCountdown() {
+      // June 19, 2026 local time
+      const targetDate = new Date("June 19, 2026 00:00:00").getTime();
+
+      const countdownTimer = setInterval(() => {
+        const now = new Date().getTime();
+        const difference = targetDate - now;
+
+        if (difference <= 0) {
+          clearInterval(countdownTimer);
+          document.getElementById('days').innerHTML = "00";
+          document.getElementById('hours').innerHTML = "00";
+          document.getElementById('minutes').innerHTML = "00";
+          document.getElementById('seconds').innerHTML = "00";
+          document.querySelector('.subtitle').innerHTML = "🎈 Happy Birthday Iqra! The celebration is live! 🎂";
+          window.showToast("🎂 HAPPY BIRTHDAY IQRA! Click 'Enter' to celebrate! 🎉");
+          return;
+        }
+
+        const d = Math.floor(difference / (1000 * 60 * 60 * 24));
+        const h = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const m = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+        const s = Math.floor((difference % (1000 * 60)) / 1000);
+
+        document.getElementById('days').innerHTML = String(d).padStart(2, '0');
+        document.getElementById('hours').innerHTML = String(h).padStart(2, '0');
+        document.getElementById('minutes').innerHTML = String(m).padStart(2, '0');
+        document.getElementById('seconds').innerHTML = String(s).padStart(2, '0');
+      }, 1000);
+    }
+    initCountdown();
+  </script>
+</body>
+</html>

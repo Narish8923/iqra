@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iqra's Memory Lane</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Page Specific Styles */
+    .gallery-section {
+      min-height: 100vh;
+      padding: 140px 20px 80px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    .gallery-bg {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background: radial-gradient(circle at 10% 20%, #050117 0%, #010005 90%);
+      opacity: 0.95;
+    }
+
+    .header-group {
+      text-align: center;
+      margin-bottom: 40px;
+      max-width: 600px;
+    }
+
+    .header-group h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 3.2rem;
+      font-weight: 700;
+      margin-top: 15px;
+      letter-spacing: 1px;
+    }
+
+    .header-group p {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+      margin-top: 12px;
+    }
+
+    /* Filter buttons */
+    .filter-tags {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+      justify-content: center;
+      z-index: 5;
+    }
+
+    .filter-btn {
+      padding: 8px 24px;
+      border-radius: 50px;
+      font-size: 12px;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      color: var(--text-secondary);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      transition: all 0.3s ease;
+      cursor: none;
+    }
+
+    .filter-btn:hover, .filter-btn.active {
+      background: linear-gradient(135deg, var(--purple-primary), var(--pink-primary));
+      color: var(--white);
+      border-color: transparent;
+      box-shadow: 0 4px 20px rgba(139, 49, 255, 0.4);
+    }
+
+    /* Polaroid 3D Cards Grid */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+      width: 100%;
+      max-width: 1200px;
+      padding: 0 20px;
+      z-index: 2;
+    }
+
+    .memory-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 20px;
+      padding: 20px;
+      cursor: none;
+      transform-style: preserve-3d;
+      perspective: 1000px;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.5s ease;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .memory-card:hover {
+      border-color: rgba(255, 215, 0, 0.3);
+      box-shadow: 0 20px 45px rgba(139, 49, 255, 0.25);
+    }
+
+    .card-img-wrapper {
+      width: 100%;
+      height: auto;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+      margin-bottom: 20px;
+      transform: translateZ(25px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.01);
+    }
+
+    .card-img-placeholder {
+      width: 100%;
+      height: 240px; /* Standard height only for fallback */
+      background: linear-gradient(45deg, #10062a, #20042a);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-img-placeholder::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.8));
+      z-index: 1;
+    }
+
+    .card-img-placeholder span {
+      position: relative;
+      z-index: 2;
+      animation: iconFloat 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes iconFloat {
+      0% { transform: translateY(0) scale(1); }
+      100% { transform: translateY(-10px) scale(1.1); }
+    }
+
+    .card-content {
+      transform: translateZ(30px);
+    }
+
+    .card-tag {
+      font-size: 10px;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--pink-primary);
+      letter-spacing: 1.5px;
+      display: inline-block;
+      margin-bottom: 8px;
+    }
+
+    .card-title {
+      font-size: 1.3rem;
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 10px;
+    }
+
+    .card-desc {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .bottom-cta {
+      margin-top: 60px;
+      z-index: 2;
+      text-align: center;
+    }
+
+    /* Mobile Smooth Layout optimization */
+    @media (max-width: 768px) {
+      .gallery-section { padding-top: 100px; padding-bottom: 40px; }
+      .header-group h2 { font-size: 2.3rem; }
+      .cards-grid { padding: 0 10px; gap: 20px; }
+      .memory-card { padding: 15px; }
+      .card-img-wrapper { height: auto; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Scroll Progress -->
+  <div id="scroll-progress"></div>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="nav-logo">IQRA</div>
+    <div class="nav-links">
+      <a href="home.html">Cosmos</a>
+      <a href="gallery.html" class="active">Memories</a>
+      <a href="letter.html">The Letter</a>
+      <a href="celebrate.html">Celebration</a>
+    </div>
+  </nav>
+
+  <!-- Gallery Section -->
+  <div class="gallery-section">
+    <div class="gallery-bg"></div>
+
+    <div class="header-group" data-reveal="fade">
+      <span class="section-tag">📸 Memory Lane</span>
+      <h2>Beautiful Moments</h2>
+      <p>Humare dosti ke sabse pyaare aur yaadgaar moments.</p>
+    </div>
+
+    <!-- Filter Buttons -->
+    <div class="filter-tags" data-reveal="fade" data-delay="200">
+      <button class="filter-btn active" onclick="filterCards('all')">All Moments</button>
+      <button class="filter-btn" onclick="filterCards('funny')">Inside Jokes</button>
+      <button class="filter-btn" onclick="filterCards('sweet')">Sweet Memories</button>
+      <button class="filter-btn" onclick="filterCards('milestone')">Key Moments</button>
+    </div>
+
+    <!-- Polaroid 3D Cards Grid -->
+    <div class="cards-grid">
+      
+      <!-- Card 1 -->
+      <div class="memory-card glass" data-category="sweet" data-reveal="scale" data-delay="100">
+        <div class="card-img-wrapper">
+          <img src="assets/images/where_it_began.jpg" alt="Where It All Began" style="width:100%; height:auto; max-height:450px; display:block; object-fit:contain; border-radius:8px;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <div class="card-img-placeholder" style="display:none;">
+            <span>🌸</span>
+          </div>
+        </div>
+        <div class="card-content">
+          <span class="card-tag">Sweet Memory</span>
+          <h3 class="card-title">Where It All Began</h3>
+          <p class="card-desc">Woh pehla din jab humne sach mein baat karna shuru kiya. Ek simple chat jo itni pyaari rishtey me badal gayi.</p>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="memory-card glass" data-category="sweet" data-reveal="scale" data-delay="200">
+        <div class="card-img-wrapper">
+          <img src="assets/images/sacred_trust.jpg" alt="The Gift of Trust" style="width:100%; height:auto; max-height:450px; display:block; object-fit:contain; border-radius:8px;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <div class="card-img-placeholder" style="display:none;">
+            <span>🤝</span>
+          </div>
+        </div>
+        <div class="card-content">
+          <span class="card-tag">Sacred Trust</span>
+          <h3 class="card-title">The Gift of Trust</h3>
+          <p class="card-desc">Pichle zakhmon ke baad kisi par bharosa karna aasan nahi tha, par tune apne dil ke darwaaje mere liye khole. Mera hath thama aur mujhpe waisa hi aitbaar kiya jaise pehli dafa kiya jata hai. Tera yeh bharosa hi meri sabse badi taqat hai.</p>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="memory-card glass" data-category="milestone" data-reveal="scale" data-delay="300">
+        <div class="card-img-wrapper">
+          <img src="assets/images/first_confession.jpg" alt="Whispers of Eternity" style="width:100%; height:auto; max-height:450px; display:block; object-fit:contain; border-radius:8px;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <div class="card-img-placeholder" style="display:none;">
+            <span>💖</span>
+          </div>
+        </div>
+        <div class="card-content">
+          <span class="card-tag">True Confession</span>
+          <h3 class="card-title">Whispers of Eternity</h3>
+          <p class="card-desc">Woh lamha jab tune pehli baar mujhe 'I love you' bola tha aur mujhe apna husband kaha tha. Lagta hai jaise mere poore wajood ko us din sukoon mil gaya ho. Meri zindagi ka sabse khoobsurat aur anmol din.</p>
+        </div>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="memory-card glass" data-category="sweet" data-reveal="scale" data-delay="400">
+        <div class="card-img-wrapper">
+          <img src="assets/images/safe_promise.jpg" alt="My Safe Haven" style="width:100%; height:auto; max-height:450px; display:block; object-fit:contain; border-radius:8px;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <div class="card-img-placeholder" style="display:none;">
+            <span>🤗</span>
+          </div>
+        </div>
+        <div class="card-content">
+          <span class="card-tag">The Promise</span>
+          <h3 class="card-title">My Safe Haven</h3>
+          <p class="card-desc">Jab tune mujhe bachhon ki tarah samjhaya tha ki tu mujhe kabhi chhod kar nahi jayegi. Bilkul jaise ek maa apne bacche ko yakeen dilati hai, tune mere saare darr door kar diye. Tere un lafzon me mujhe apna sabse surakshit ghar mil gaya.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- CTA to Next Page -->
+    <div class="bottom-cta" data-reveal="fade">
+      <a href="letter.html" class="btn btn-primary btn-transition">
+        <span>Proceed to The Letter</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+      </a>
+    </div>
+
+  </div>
+
+  <script src="js/main.js"></script>
+  <script>
+    /* ====== 3D Hover Tilt Effect (Disabled on Mobile) ====== */
+    const cards = document.querySelectorAll('.memory-card');
+
+    cards.forEach(card => {
+      card.addEventListener('mousemove', e => {
+        // Disable on touch screens/mobile for smooth experience
+        if (window.innerWidth <= 768) return;
+
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        const xc = rect.width / 2;
+        const yc = rect.height / 2;
+
+        const angleX = (yc - y) / 10;
+        const angleY = (x - xc) / 10;
+
+        card.style.transform = `perspective(1000px) rotateX(${angleX}deg) rotateY(${angleY}deg) scale(1.03)`;
+      });
+
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)';
+      });
+    });
+
+    /* ====== Filter functionality ====== */
+    function filterCards(category) {
+      const buttons = document.querySelectorAll('.filter-btn');
+      buttons.forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+
+      const allCards = document.querySelectorAll('.memory-card');
+      allCards.forEach(card => {
+        const cat = card.getAttribute('data-category');
+        if (category === 'all' || cat === category) {
+          card.style.display = 'block';
+          setTimeout(() => card.style.opacity = '1', 50);
+        } else {
+          card.style.opacity = '0';
+          setTimeout(() => card.style.display = 'none', 300);
+        }
+      });
+    }
+  </script>
+</body>
+</html>

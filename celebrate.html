@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iqra's Celebration Party!</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Page Specific Styles */
+    .party-container {
+      min-height: 100vh;
+      padding: 120px 20px 80px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .celebrate-bg {
+      position: fixed;
+      inset: 0;
+      z-index: -3;
+      background: radial-gradient(circle at center, #0f001c 0%, #030008 100%);
+    }
+
+    /* Full-screen Fireworks canvas */
+    #fireworks-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      pointer-events: none;
+    }
+
+    /* Floating Balloons container */
+    #balloons-container {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .balloon {
+      position: absolute;
+      width: 60px;
+      height: 75px;
+      border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+      cursor: none;
+      pointer-events: auto;
+      animation: floatUp 8s linear forwards;
+      transform-origin: bottom center;
+    }
+
+    .balloon::after {
+      content: "";
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+    }
+
+    .balloon-string {
+      position: absolute;
+      bottom: -40px;
+      left: 50%;
+      width: 1.5px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(110vh) rotate(0deg); }
+      100% { transform: translateY(-20vh) rotate(15deg); }
+    }
+
+    /* Interactive 3D CSS Birthday Cake */
+    .cake-container {
+      position: relative;
+      margin-top: 40px;
+      width: 300px;
+      height: 300px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      z-index: 5;
+    }
+
+    .cake {
+      position: relative;
+      width: 200px;
+      height: 160px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Cake Tiers */
+    .tier {
+      width: 100%;
+      height: 50px;
+      border-radius: 30px / 15px;
+      position: relative;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+
+    .tier-top {
+      width: 120px;
+      height: 40px;
+      background: linear-gradient(135deg, #ff6fa9, #d03070);
+      z-index: 3;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .tier-middle {
+      width: 160px;
+      height: 46px;
+      background: linear-gradient(135deg, #a052ff, #6220b3);
+      margin-top: -15px;
+      z-index: 2;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .tier-bottom {
+      width: 200px;
+      height: 52px;
+      background: linear-gradient(135deg, #ffd700, #b89200);
+      margin-top: -18px;
+      z-index: 1;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Cream Drips */
+    .cream-drip {
+      position: absolute;
+      top: 15px;
+      left: 10%;
+      width: 80%;
+      height: 12px;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 0 0 10px 10px;
+      z-index: 4;
+    }
+
+    /* Candles */
+    .candles-row {
+      position: absolute;
+      top: -20px;
+      width: 80px;
+      display: flex;
+      justify-content: space-between;
+      z-index: 10;
+    }
+
+    .candle {
+      position: relative;
+      width: 8px;
+      height: 35px;
+      background: linear-gradient(90deg, #ffd700, #ff9500);
+      border-radius: 3px;
+      cursor: none;
+      transition: transform 0.3s var(--ease-bounce);
+    }
+
+    .candle:hover {
+      transform: scale(1.1);
+    }
+
+    /* Candle Flame */
+    .flame {
+      position: absolute;
+      top: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 10px;
+      height: 16px;
+      background: radial-gradient(circle at bottom, #ffea00 20%, #ff5c00 70%, transparent 100%);
+      border-radius: 50% 50% 20% 20% / 60% 60% 40% 40%;
+      box-shadow: 0 0 10px rgba(255,92,0,0.8);
+      animation: flicker 0.15s infinite alternate;
+      cursor: none;
+    }
+
+    .flame.extinguished {
+      display: none;
+    }
+
+    @keyframes flicker {
+      0% { transform: translateX(-50%) scale(1) rotate(-2deg); }
+      100% { transform: translateX(-50%) scale(1.1) rotate(2deg); opacity: 0.9; }
+    }
+
+    /* Celebration Card text overlay */
+    .celebration-overlay {
+      margin-top: 30px;
+      text-align: center;
+      z-index: 5;
+      max-width: 600px;
+    }
+
+    .celebration-title {
+      font-family: 'Cinzel', serif;
+      font-size: 3rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      margin-bottom: 15px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .celebration-title.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .celebration-para {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+
+    /* Visualizer & Vinyl Record Styling */
+    .vinyl-box {
+      margin-top: 40px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      width: 260px;
+      z-index: 5;
+    }
+
+    .vinyl-disc {
+      width: 120px;
+      height: 120px;
+      background: radial-gradient(circle, #333 10%, #111 40%, #000 70%);
+      border-radius: 50%;
+      border: 4px solid #222;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: spin 3.5s linear infinite;
+      animation-play-state: paused;
+    }
+
+    .vinyl-disc::before {
+      content: '';
+      position: absolute;
+      width: 35px;
+      height: 35px;
+      background: var(--pink-primary);
+      border-radius: 50%;
+    }
+
+    .vinyl-disc::after {
+      content: '';
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: #000;
+      border-radius: 50%;
+    }
+
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+
+    .visualizer-canvas {
+      width: 100%;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .back-home-btn {
+      margin-top: 40px;
+      z-index: 5;
+    }
+
+    /* Knife Styling & Animation */
+    .knife {
+      position: absolute;
+      top: -80px;
+      left: 50%;
+      transform: translateX(-50%) rotate(45deg) scale(0);
+      width: 15px;
+      height: 80px;
+      background: linear-gradient(90deg, #e0e0e0, #a0a0a0);
+      border-radius: 5px 5px 0 0;
+      border: 1px solid rgba(255,255,255,0.4);
+      z-index: 20;
+      opacity: 0;
+      transform-origin: bottom center;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    }
+
+    .knife::after {
+      content: '';
+      position: absolute;
+      bottom: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 10px;
+      height: 30px;
+      background: #4a2f0f; /* wooden handle */
+      border-radius: 0 0 3px 3px;
+    }
+
+    .cake.slicing .knife {
+      animation: sliceAction 1.2s ease forwards;
+    }
+
+    @keyframes sliceAction {
+      0% { transform: translateX(-50%) translateY(-20px) rotate(45deg) scale(1); opacity: 0; }
+      20% { transform: translateX(-50%) translateY(0) rotate(15deg) scale(1); opacity: 1; }
+      50% { transform: translateX(-50%) translateY(90px) rotate(-10deg) scale(1); opacity: 1; }
+      80% { transform: translateX(-50%) translateY(100px) rotate(-10deg) scale(1); opacity: 0; }
+      100% { transform: translateX(-50%) translateY(100px) rotate(-10deg) scale(0); opacity: 0; }
+    }
+
+    /* Cake Slice Styling */
+    .cake-slice {
+      position: absolute;
+      width: 40px;
+      height: 120px;
+      top: 15px;
+      left: 50%;
+      transform: translateX(-50%) scale(0);
+      z-index: 15;
+      transform-origin: bottom center;
+      transition: transform 1s var(--ease-bounce), opacity 0.5s ease;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .cake.cut .cake-slice {
+      transform: translate(60px, 20px) rotate(20deg) scale(1.05);
+      opacity: 1;
+    }
+
+    .slice-tier {
+      border-radius: 10px / 5px;
+      position: absolute;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.4);
+      border-left: 2px dashed rgba(255, 255, 255, 0.4); /* cut edge cream indicator */
+    }
+
+    .slice-top {
+      width: 24px;
+      height: 30px;
+      background: linear-gradient(135deg, #ff8cb9, #e04080);
+      top: 0;
+      left: 8px;
+      z-index: 3;
+    }
+
+    .slice-middle {
+      width: 32px;
+      height: 34px;
+      background: linear-gradient(135deg, #b07cff, #7330c9);
+      top: 15px;
+      left: 4px;
+      z-index: 2;
+    }
+
+    .slice-bottom {
+      width: 40px;
+      height: 38px;
+      background: linear-gradient(135deg, #ffe047, #d4a700);
+      top: 30px;
+      left: 0;
+      z-index: 1;
+    }
+
+    /* Golden Cut Button Styling */
+    .golden-cut-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      background: linear-gradient(135deg, #ffd700 0%, #ff8c00 50%, #d4af37 100%);
+      background-size: 200% auto;
+      color: #030008;
+      border: none;
+      padding: 16px 36px;
+      font-size: 1.15rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      margin-top: 25px;
+      opacity: 0;
+      transform: scale(0.7);
+      pointer-events: none;
+      z-index: 100;
+      font-family: 'Montserrat', sans-serif;
+      text-shadow: 0 1px 2px rgba(255, 255, 255, 0.4);
+      display: none;
+    }
+
+    .golden-cut-btn.visible {
+      display: inline-flex;
+      opacity: 1;
+      transform: scale(1);
+      pointer-events: auto;
+      animation: pulseGoldBtn 2s infinite alternate, shineGold 3s infinite linear;
+    }
+
+    @keyframes pulseGoldBtn {
+      0% {
+        box-shadow: 0 0 15px rgba(255, 215, 0, 0.4), 0 0 0 0px rgba(255, 215, 0, 0.2);
+        transform: scale(1);
+      }
+      100% {
+        box-shadow: 0 0 35px rgba(255, 215, 0, 0.9), 0 0 0 15px rgba(255, 215, 0, 0);
+        transform: scale(1.05);
+      }
+    }
+
+    @keyframes shineGold {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .golden-cut-btn:hover {
+      transform: scale(1.08) translateY(-3px);
+      filter: brightness(1.1);
+      box-shadow: 0 10px 40px rgba(255, 215, 0, 0.6);
+    }
+
+    .golden-cut-btn:active {
+      transform: scale(0.96) translateY(-1px);
+    }
+
+    .golden-cut-btn span {
+      display: inline-block;
+    }
+
+    /* Premium Gallery & Neon Grid Styles */
+    .her-photos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 25px;
+      margin-top: 25px;
+      justify-content: center;
+    }
+
+    .premium-photo-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 2px solid rgba(0, 191, 255, 0.4);
+      border-radius: 20px;
+      overflow: hidden;
+      aspect-ratio: 9 / 16;
+      position: relative;
+      box-shadow: 0 0 15px rgba(0, 191, 255, 0.3);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .premium-photo-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+      display: block;
+    }
+
+    .premium-photo-card:hover {
+      transform: translateY(-12px) scale(1.04);
+      box-shadow: 0 0 25px rgba(0, 191, 255, 0.8), 0 0 15px rgba(255, 0, 128, 0.4);
+      border-color: rgba(255, 0, 128, 0.6);
+    }
+
+    .premium-photo-card:hover img {
+      transform: scale(1.06);
+    }
+
+    .card-caption-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(4px);
+      padding: 10px 0;
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-align: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      letter-spacing: 0.5px;
+      transition: background 0.3s ease;
+    }
+
+    .premium-photo-card:hover .card-caption-bar {
+      background: rgba(255, 0, 128, 0.4);
+    }
+
+    /* Babu & Jodi Titles */
+    .babu-title {
+      color: #ffd700;
+      font-family: 'Cinzel', serif;
+      font-size: 1.4rem;
+      font-weight: bold;
+      margin-top: 45px;
+      margin-bottom: 8px;
+      text-shadow: 0 0 12px rgba(255, 215, 0, 0.4);
+      letter-spacing: 1.5px;
+    }
+
+    .jodi-title {
+      color: #00bfff;
+      font-family: 'Cinzel', serif;
+      font-size: 1.8rem;
+      font-weight: 900;
+      margin-bottom: 35px;
+      text-shadow: 0 0 20px rgba(0, 191, 255, 0.7);
+      letter-spacing: 1.5px;
+    }
+
+    /* Jodi Card Container & Styles */
+    .jodi-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 40px;
+      margin: 30px auto;
+      max-width: 600px;
+      flex-wrap: wrap;
+    }
+
+    .jodi-card {
+      width: 200px;
+      aspect-ratio: 3 / 4;
+      background: rgba(255, 255, 255, 0.03);
+      border: 2.5px solid rgba(0, 191, 255, 0.5);
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 0 20px rgba(0, 191, 255, 0.4);
+      position: relative;
+      transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+
+    .jodi-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+
+    .jodi-card:hover {
+      transform: translateY(-8px) scale(1.03);
+      border-color: rgba(255, 92, 141, 0.6);
+      box-shadow: 0 0 30px rgba(255, 92, 141, 0.7);
+    }
+
+    .jodi-card:hover img {
+      transform: scale(1.05);
+    }
+
+    .jodi-name-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(5px);
+      padding: 10px 0;
+      color: #fff;
+      font-weight: 800;
+      font-size: 1rem;
+      text-align: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      letter-spacing: 1px;
+    }
+
+    .heart-divider {
+      font-size: 3.5rem;
+      animation: heartBeat 1.4s infinite ease-in-out;
+      filter: drop-shadow(0 0 15px rgba(255, 0, 128, 0.8));
+      user-select: none;
+    }
+
+    @keyframes heartBeat {
+      0% { transform: scale(1); }
+      25% { transform: scale(1.25); }
+      50% { transform: scale(0.95); }
+      75% { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
+
+    @media (max-width: 768px) {
+      .her-photos-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+      }
+      .jodi-container {
+        gap: 20px;
+      }
+      .jodi-card {
+        width: 150px;
+      }
+      .heart-divider {
+        font-size: 2.5rem;
+      }
+      .babu-title {
+        font-size: 1.1rem;
+      }
+      .jodi-title {
+        font-size: 1.4rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Scroll Progress -->
+  <div id="scroll-progress"></div>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="nav-logo">IQRA</div>
+    <div class="nav-links">
+      <a href="home.html">Cosmos</a>
+      <a href="gallery.html">Memories</a>
+      <a href="letter.html">The Letter</a>
+      <a href="celebrate.html" class="active">Celebration</a>
+    </div>
+  </nav>
+
+  <!-- Celebration Party Section -->
+  <div class="party-container">
+    <div class="celebrate-bg"></div>
+    <canvas id="fireworks-canvas"></canvas>
+    <div id="balloons-container"></div>
+
+    <div class="header-group" data-reveal="fade" style="margin-bottom: 20px;">
+      <span class="section-tag">🎂 Blow The Candles</span>
+      <h2>Make A Wish! ✨</h2>
+      <p style="color: var(--gold-light); font-size: 1.1rem; margin-top: 12px; font-weight: 700; text-shadow: 0 2px 5px rgba(0,0,0,0.6); letter-spacing: 0.5px;">
+        🕯️ Ek-ek kar ke teeno (3) candles par tap karo aur magic dekho!
+      </p>
+    </div>
+
+    <!-- Cake Layout -->
+    <div class="cake-container" data-reveal="scale">
+      <div class="cake" id="cake">
+        <!-- Slicing Knife -->
+        <div class="knife" id="knife"></div>
+
+        <!-- Row of candles placed on top tier -->
+        <div class="candles-row">
+          <div class="candle clickable" onclick="blowCandle(this); event.stopPropagation();">
+            <div class="flame"></div>
+          </div>
+          <div class="candle clickable" onclick="blowCandle(this); event.stopPropagation();">
+            <div class="flame"></div>
+          </div>
+          <div class="candle clickable" onclick="blowCandle(this); event.stopPropagation();">
+            <div class="flame"></div>
+          </div>
+        </div>
+
+        <!-- Tiers -->
+        <div class="tier tier-top">
+          <div class="cream-drip"></div>
+        </div>
+        <div class="tier tier-middle"></div>
+        <div class="tier tier-bottom"></div>
+
+        <!-- Interactive 3D Slice that slides out -->
+        <div class="cake-slice" id="cake-slice">
+          <div class="slice-tier slice-top"></div>
+          <div class="slice-tier slice-middle"></div>
+          <div class="slice-tier slice-bottom"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Golden Cut Button (Initially Hidden, appears when candles are blown out) -->
+    <button class="golden-cut-btn" id="golden-cut-btn" onclick="startCakeCutting()">
+      <span>🎂 Cut The Cake! 🔪</span>
+    </button>
+
+    <!-- Dynamic Overlay text revealing when candles blown out -->
+    <div class="celebration-overlay">
+      <h1 class="celebration-title grad-cosmic" id="bday-title">Happy Birthday Iqra! 🎂✨</h1>
+      <p class="celebration-para" id="bday-desc">
+        🕯️ Ek-ek kar ke teeno (3) candles par tap karo aur magic dekho! (Click/tap each candle to blow it out).
+      </p>
+    </div>
+
+    <!-- Vinyl Disc Player & Ambient Visualizer Widget -->
+    <div class="vinyl-box glass" data-reveal="scale" data-delay="200">
+      <div class="vinyl-disc" id="vinyl"></div>
+      <canvas class="visualizer-canvas" id="vis-canvas"></canvas>
+      <span style="font-size: 11px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px;">
+        Cosmic Radio Player
+      </span>
+    </div>
+
+    <!-- Premium Memory Gallery Section at the Bottom -->
+    <div class="memories-section glass" data-reveal="fade" style="margin-top: 50px; padding: 35px 25px; width: 100%; max-width: 1100px; border-radius: 24px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.08);">
+      <h3 class="grad-cosmic" style="font-family: 'Cinzel', serif; font-size: 2.2rem; margin-bottom: 8px;">✨ Her Beautiful Captures ✨</h3>
+      <p style="color: var(--text-secondary); margin-bottom: 30px; font-size: 0.95rem;">
+        Some of the most gorgeous memories of my beautiful wife Iqra.
+      </p>
+      
+      <!-- Premium Grid of Her Photos (10 Photos) -->
+      <div class="her-photos-grid">
+        <div class="premium-photo-card">
+          <img src="assets/images/iqra_1.jpg" alt="Iqra's Portrait 1" onerror="this.src='https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=600'">
+          <div class="card-caption-bar">My Sweet Jaan 💖</div>
+        </div>
+        <div class="premium-photo-card">
+          <img src="assets/images/iqra_2.jpg" alt="Iqra's Portrait 2" onerror="this.src='https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=600'">
+          <div class="card-caption-bar">Iqra ✨</div>
+        </div>
+        <div class="premium-photo-card">
+          <img src="assets/images/iqra_3.jpg" alt="Iqra's Portrait 3" onerror="this.src='https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&q=80&w=600'">
+          <div class="card-caption-bar">Stunning Look 🌸</div>
+        </div>
+        <div class="premium-photo-card">
+          <img src="assets/images/iqra_4.jpg" alt="Iqra's Portrait 4" onerror="this.src='https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&q=80&w=600'">
+          <div class="card-caption-bar">Queen Of My Heart 👑</div>
+        </div>
+        <div class="premium-photo-card">
+          <img src="assets/images/iqra_5.jpg" alt="Iqra's Portrait 5" onerror="this.src='https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&q=80&w=600'">
+          <div class="card-caption-bar">Jannat Jaisi 🌟</div>
+        </div>
+        <div class="premium-photo-card">
+          <img src="assets/images/iqra_6.jpg" alt="Iqra's Portrait 6" onerror="this.src='https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=600'">
+          <div class="card-caption-bar">Love Of My Life ❤️</div>
+        </div>
+        <div class="premium-photo-card">
+          <img src="assets/images/iqra_7.jpg" alt="Iqra's Portrait 7" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=600'">
+          <div class="card-caption-bar">Gorgeous Wife 🌹</div>
+        </div>
+        <div class="premium-photo-card">
+          <img src="assets/images/iqra_8.jpg" alt="Iqra's Portrait 8" onerror="this.src='https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?auto=format&fit=crop&q=80&w=600'">
+          <div class="card-caption-bar">Pure Innocence 💎</div>
+        </div>
+        <div class="premium-photo-card">
+          <img src="assets/images/iqra_9.jpg" alt="Iqra's Portrait 9" onerror="this.src='https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&q=80&w=600'">
+          <div class="card-caption-bar">My Blessing 🌌</div>
+        </div>
+        <div class="premium-photo-card">
+          <img src="assets/images/iqra_10.jpg" alt="Iqra's Portrait 10" onerror="this.src='https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=600'">
+          <div class="card-caption-bar">Forever Mine 💕</div>
+        </div>
+      </div>
+
+      <!-- Divider line -->
+      <div style="height: 1px; background: linear-gradient(90deg, transparent, rgba(0, 191, 255, 0.3), transparent); margin: 50px 0 30px 0;"></div>
+
+      <!-- Jodi Couple Section -->
+      <div class="babu-title">✨ Aapka Babu Narish Choudhury Ji ✨</div>
+      <div class="jodi-title">💙 Narish & Iqra — Jodi No. 1 💙</div>
+
+      <div class="jodi-container">
+        <!-- Narish Card -->
+        <div class="jodi-card">
+          <img src="assets/images/narish.png" alt="Narish" onerror="this.src='https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=600'">
+          <div class="jodi-name-bar">Narish</div>
+        </div>
+
+        <!-- Animated Pulse Heart -->
+        <div class="heart-divider">💘</div>
+
+        <!-- Iqra Card -->
+        <div class="jodi-card">
+          <img src="assets/images/iqra_6.jpg" alt="Iqra" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=600'">
+          <div class="jodi-name-bar">Iqra</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="back-home-btn" data-reveal="fade">
+      <a href="home.html" class="btn btn-outline btn-transition">
+        <span>🌌 Back to Cosmos</span>
+      </a>
+    </div>
+
+  </div>
+
+  <script src="js/main.js"></script>
+  <script>
+    /* ====== Physics Fireworks Engine ====== */
+    const canvas = document.getElementById('fireworks-canvas');
+    const ctx = canvas.getContext('2d');
+    
+    let fireworks = [];
+    let particles = [];
+    let isClimax = false;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    class Firework {
+      constructor(sx, sy, tx, ty) {
+        this.x = sx;
+        this.y = sy;
+        this.tx = tx;
+        this.ty = ty;
+        this.distanceToTarget = calculateDistance(sx, sy, tx, ty);
+        this.distanceTraveled = 0;
+        this.coordinates = [];
+        this.coordinateCount = 3;
+        while (this.coordinateCount--) {
+          this.coordinates.push([this.x, this.y]);
+        }
+        this.angle = Math.atan2(ty - sy, tx - sx);
+        this.speed = 2;
+        this.acceleration = 1.05;
+        this.brightness = Math.random() * 50 + 50;
+      }
+
+      update(index) {
+        this.coordinates.pop();
+        this.coordinates.unshift([this.x, this.y]);
+        this.speed *= this.acceleration;
+        
+        let vx = Math.cos(this.angle) * this.speed;
+        let vy = Math.sin(this.angle) * this.speed;
+        
+        this.distanceTraveled = calculateDistance(this.x, this.y, this.tx, this.ty);
+        
+        if (this.speed >= this.distanceTraveled) {
+          createParticles(this.tx, this.ty);
+          fireworks.splice(index, 1);
+        } else {
+          this.x += vx;
+          this.y += vy;
+        }
+      }
+
+      draw() {
+        ctx.beginPath();
+        ctx.moveTo(this.coordinates[this.coordinates.length - 1][0], this.coordinates[this.coordinates.length - 1][1]);
+        ctx.lineTo(this.x, this.y);
+        ctx.strokeStyle = `hsl(${Math.random() * 360}, 100%, ${this.brightness}%)`;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      }
+    }
+
+    class Particle {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.coordinates = [];
+        this.coordinateCount = 5;
+        while (this.coordinateCount--) {
+          this.coordinates.push([this.x, this.y]);
+        }
+        this.angle = Math.random() * Math.PI * 2;
+        this.speed = Math.random() * 8 + 1;
+        this.friction = 0.95;
+        this.gravity = 0.15;
+        this.hue = Math.random() * 360;
+        this.brightness = Math.random() * 60 + 40;
+        this.alpha = 1;
+        this.decay = Math.random() * 0.02 + 0.01;
+      }
+
+      update(index) {
+        this.coordinates.pop();
+        this.coordinates.unshift([this.x, this.y]);
+        this.speed *= this.friction;
+        this.x += Math.cos(this.angle) * this.speed;
+        this.y += Math.sin(this.angle) * this.speed + this.gravity;
+        this.alpha -= this.decay;
+        
+        if (this.alpha <= this.decay) {
+          particles.splice(index, 1);
+        }
+      }
+
+      draw() {
+        ctx.beginPath();
+        ctx.moveTo(this.coordinates[this.coordinates.length - 1][0], this.coordinates[this.coordinates.length - 1][1]);
+        ctx.lineTo(this.x, this.y);
+        ctx.strokeStyle = `hsla(${this.hue}, 100%, ${this.brightness}%, ${this.alpha})`;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+    }
+
+    function calculateDistance(x1, y1, x2, y2) {
+      return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
+    }
+
+    function createParticles(x, y) {
+      let particleCount = 40;
+      while (particleCount--) {
+        particles.push(new Particle(x, y));
+      }
+    }
+
+    function triggerFirework() {
+      const sx = canvas.width / 2;
+      const sy = canvas.height;
+      const tx = Math.random() * canvas.width;
+      const ty = Math.random() * (canvas.height / 2);
+      fireworks.push(new Firework(sx, sy, tx, ty));
+    }
+
+    function animateFireworks() {
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.globalCompositeOperation = 'lighter';
+      
+      let i = fireworks.length;
+      while (i--) {
+        fireworks[i].draw();
+        fireworks[i].update(i);
+      }
+      
+      let j = particles.length;
+      while (j--) {
+        particles[j].draw();
+        particles[j].update(j);
+      }
+      
+      // Auto-trigger fireworks if birthday mode is active
+      if (isClimax && Math.random() < 0.06) {
+        triggerFirework();
+      }
+      
+      requestAnimationFrame(animateFireworks);
+    }
+    animateFireworks();
+
+    /* ====== Balloon Physics & Popping ====== */
+    const balloonColors = ['#FF0080', '#8B31FF', '#00D4FF', '#FFD700', '#FF6B9D'];
+
+    function createBalloon() {
+      const container = document.getElementById('balloons-container');
+      const balloon = document.createElement('div');
+      balloon.className = 'balloon clickable';
+      
+      const left = Math.random() * 85; // Percent offset
+      const color = balloonColors[Math.floor(Math.random() * balloonColors.length)];
+      
+      balloon.style.left = `${left}%`;
+      balloon.style.background = `radial-gradient(circle at 30% 30%, #fff 0%, ${color} 80%)`;
+      balloon.style.setProperty('--balloon-color', color);
+      
+      // Dynamic inline style triangle support
+      const style = document.createElement('style');
+      style.textContent = `.balloon[style*="${color}"]::after { border-bottom-color: ${color}; }`;
+      document.head.appendChild(style);
+
+      const string = document.createElement('div');
+      string.className = 'balloon-string';
+      balloon.appendChild(string);
+
+      balloon.addEventListener('click', (e) => {
+        popBalloon(balloon, e.clientX, e.clientY);
+      });
+
+      container.appendChild(balloon);
+
+      // Clean up after floating offscreen
+      setTimeout(() => balloon.remove(), 8000);
+    }
+
+    // Launch balloons periodically
+    setInterval(() => {
+      createBalloon();
+    }, 1800);
+
+    function popBalloon(element, x, y) {
+      // Scatter sparks at balloon center
+      createParticles(x, y);
+      element.remove();
+      window.showToast("🎈 POP!");
+      
+      // Synthesize a quick high-pitched pop sound
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        
+        osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+        
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.1);
+      } catch (e) {}
+    }
+
+    /* ====== Blow Out Candles & Cake Cutting Logic ====== */
+    let blownCandles = 0;
+    let cakeCutState = false;
+
+    function blowCandle(element) {
+      const flame = element.querySelector('.flame');
+      if (flame.classList.contains('extinguished')) return;
+
+      flame.classList.add('extinguished');
+      blownCandles++;
+      
+      // Synthesize puff sound
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const bufferSize = audioCtx.sampleRate * 0.15;
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = Math.random() * 2 - 1;
+        }
+        const noise = audioCtx.createBufferSource();
+        noise.buffer = buffer;
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.value = 400;
+        
+        const gain = audioCtx.createGain();
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(audioCtx.destination);
+        noise.start();
+      } catch(e) {}
+
+      if (blownCandles === 3) {
+        const btn = document.getElementById('golden-cut-btn');
+        if (btn) btn.classList.add('visible');
+        window.showToast("✨ Make a wish and click the Golden Button to cut the cake! 🎂");
+      }
+    }
+
+    function startCakeCutting() {
+      if (blownCandles < 3 || cakeCutState) return;
+      cakeCutState = true;
+
+      // Hide the golden button
+      const btn = document.getElementById('golden-cut-btn');
+      if (btn) btn.classList.remove('visible');
+
+      const cake = document.getElementById('cake');
+      
+      // Slicing animation starts
+      cake.classList.add('slicing');
+
+      // Synthesize slice sound
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        
+        osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(200, audioCtx.currentTime + 0.5);
+        gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
+        
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.5);
+      } catch(e) {}
+
+      // Wait for knife slice cut down
+      setTimeout(() => {
+        cake.classList.remove('slicing');
+        cake.classList.add('cut');
+        
+        window.parent.postMessage('pause_main_music', '*');
+        playCelebrationAudio();
+        
+        // Trigger fireworks & balloons party
+        triggerClimaxCelebration();
+      }, 1000);
+    }
+
+    function playCelebrationAudio() {
+      try {
+        const fireworksAudio = new Audio('assets/audio/Fireworks with Sound Effects.mp3');
+        fireworksAudio.volume = 0.8;
+        fireworksAudio.play().catch(e => console.log("Fireworks audio blocked", e));
+        
+        const beliyaAudio = new Audio('assets/audio/Mere Beliya Ve (Official Video) Gurnam Bhullar _ Tania _ B Praak _ Jaani _ Jagdeep Sidhu.mp3');
+        beliyaAudio.volume = 0.9;
+        beliyaAudio.loop = true;
+        beliyaAudio.play().catch(e => console.log("Beliya audio blocked", e));
+      } catch(e) {
+        console.error(e);
+      }
+    }
+
+    function triggerClimaxCelebration() {
+      isClimax = true;
+      document.getElementById('bday-title').classList.add('visible');
+      document.getElementById('bday-desc').innerHTML = "🎉 JANNAT JAISI ZINDAGI! The cosmos celebrates Iqra! Enjoy the gorgeous fireworks, physics-based balloons, and Happy Birthday Song playing! 🎂🎵";
+      window.showToast("✨ Happy Birthday Iqra! 🎇");
+      
+      // Spin vinyl record!
+      const vinyl = document.getElementById('vinyl');
+      if (vinyl) vinyl.style.animationPlayState = 'running';
+      
+      // Force trigger fireworks initially
+      for (let i = 0; i < 8; i++) {
+        setTimeout(triggerFirework, i * 200);
+      }
+    }
+
+    /* ====== Responsive Audio Visualizer Canvas ====== */
+    const visCanvas = document.getElementById('vis-canvas');
+    const visCtx = visCanvas.getContext('2d');
+
+    function animateVisualizer() {
+      visCanvas.width = visCanvas.parentElement.clientWidth - 48; // Adjust padding
+      visCanvas.height = 40;
+      
+      visCtx.clearRect(0, 0, visCanvas.width, visCanvas.height);
+      
+      const bars = 25;
+      const barWidth = visCanvas.width / bars - 2;
+      
+      for (let i = 0; i < bars; i++) {
+        // Generate pseudo-amplitude depending on music active state
+        const musicPlaying = localStorage.getItem('iqra_music_playing') === 'true';
+        let height = 5;
+        if (musicPlaying) {
+          height = Math.sin(Date.now() * 0.005 + i * 0.3) * 15 + 18;
+          height += Math.random() * 4;
+        }
+        
+        // Vertical offset centered
+        const y = (visCanvas.height - height) / 2;
+        
+        // Gradient color for visualizer
+        const grad = visCtx.createLinearGradient(0, y, 0, y + height);
+        grad.addColorStop(0, '#FF0080'); // Pink
+        grad.addColorStop(1, '#8B31FF'); // Purple
+        
+        visCtx.fillStyle = grad;
+        visCtx.fillRect(i * (barWidth + 2), y, barWidth, height);
+      }
+      
+      // Check vinyl player status based on global sound system
+      const vinyl = document.getElementById('vinyl');
+      const isMusicActive = localStorage.getItem('iqra_music_playing') === 'true';
+      if (vinyl) {
+        vinyl.style.animationPlayState = isMusicActive ? 'running' : 'paused';
+      }
+
+      requestAnimationFrame(animateVisualizer);
+    }
+    animateVisualizer();
+
+    // Resume main background music if the user navigates away from this page
+    window.addEventListener('unload', () => {
+      window.parent.postMessage('resume_main_music', '*');
+    });
+  </script>
+</body>
+</html>
