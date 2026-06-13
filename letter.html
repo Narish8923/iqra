@@ -260,15 +260,26 @@
       transform: translateY(0);
     }
 
+    @media (max-width: 768px) {
+      .letter-section { padding-top: 100px; padding-bottom: 120px; }
+    }
+
     @media (max-width: 600px) {
       .envelope-wrapper.open .letter-paper {
-        width: 320px;
+        width: 290px;
         height: 380px;
-        left: 0;
+        left: 15px;
         top: -160px;
       }
       .letter-header { font-size: 1.2rem; }
-      .letter-body { font-size: 1.15rem; }
+      .letter-body { font-size: 1.05rem; }
+    }
+
+    @media (max-width: 350px) {
+      .envelope-wrapper {
+        transform: scale(0.85);
+        margin-top: 20px;
+      }
     }
   </style>
 </head>
